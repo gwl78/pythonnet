@@ -587,6 +587,17 @@ namespace Python.Runtime
 
                 case TypeCode.Int32:
                     {
+                        // don't convert True and False to integers, as it will confuse the operator overloading
+                        if (value == Runtime.PyTrue
+                        ||  value == Runtime.PyFalse )
+                        {
+                            if (setError)
+                            {
+                                goto type_error;
+                            }
+                            return false;
+                        }
+                        
                         // Python3 always use PyLong API
                         nint num = Runtime.PyLong_AsSignedSize_t(value);
                         if (num == -1 && Exceptions.ErrorOccurred())
